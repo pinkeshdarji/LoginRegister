@@ -87,27 +87,30 @@ class _OnBoardingState extends State<OnBoarding> {
           child: Container(
         child: Stack(
           children: <Widget>[
-            PageView(
+            PageView.builder(
+              physics: ClampingScrollPhysics(),
+              itemCount: introWidgetsList.length,
               onPageChanged: (int page) {
                 getChangedPageAndMoveBar(page);
               },
               controller: controller,
-              children: introWidgetsList,
+              itemBuilder: (context, index) {
+                return introWidgetsList[index];
+              },
             ),
-            Positioned(
-              bottom: screenheight * 0.1,
-              left: screenWidth * 0.04,
+            Container(
+              alignment: AlignmentDirectional.bottomCenter,
+              padding: EdgeInsets.only(bottom: 35),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  slidingBar(),
-                  slidingBar(),
-                  slidingBar(),
-                  slidingBar(),
+                  for (var i in introWidgetsList) slidingBar(),
                 ],
               ),
             ),
             AnimatedPositioned(
                 duration: Duration(milliseconds: 100),
+                curve: Curves.fastOutSlowIn,
                 bottom: screenheight * 0.1,
                 left: screenWidth * _moveBar,
                 child: movingBar())
@@ -131,7 +134,7 @@ class _OnBoardingState extends State<OnBoarding> {
       margin: EdgeInsets.symmetric(horizontal: 8),
       height: 5,
       width: screenWidth * 0.1,
-      decoration: BoxDecoration(color: klightGrey),
+      decoration: BoxDecoration(color: kPruple),
     );
   }
 }

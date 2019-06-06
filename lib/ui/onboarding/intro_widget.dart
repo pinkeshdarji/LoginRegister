@@ -47,23 +47,22 @@ class IntroWidget extends StatelessWidget {
             child: Stack(
               alignment: AlignmentDirectional.bottomStart,
               children: <Widget>[
-                Container(
-                  height: screenheight * 0.15,
-                  child: Text(
-                    type.toString().toUpperCase(),
-                    style: TextStyle(
-                        fontSize: 100.0,
-                        fontWeight: FontWeight.w900,
-                        foreground: Paint()..shader = linearGradient),
+                Opacity(
+                  opacity: 0.15,
+                  child: Container(
+                    height: screenheight * 0.15,
+                    child: Text(
+                      type.toString().toUpperCase(),
+                      style: TextStyle(
+                          fontSize: 100.0,
+                          fontWeight: FontWeight.w900,
+                          foreground: Paint()..shader = linearGradient),
+                    ),
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.only(left: 25),
-                  alignment: AlignmentDirectional.bottomStart,
-                  decoration:
-                      BoxDecoration(color: kPrimaryColor.withOpacity(0.82)),
-                  height: screenheight * 0.15,
-                  width: screenWidth,
+                Positioned(
+                  bottom: -5,
+                  left: 15,
                   child: Text(
                     type.toString().toUpperCase(),
                     style: TextStyle(
