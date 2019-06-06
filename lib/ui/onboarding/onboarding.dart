@@ -12,31 +12,33 @@ class _OnBoardingState extends State<OnBoarding> {
   double screenWidth = 0.0;
   double screenheight = 0.0;
 
-  PageController controller = PageController();
-  var currentPageValue = 0.0;
-  double _moveBar = 0.05;
+  int currentPageValue = 0;
+  int previousPageValue = 0;
+  PageController controller;
+  double _moveBar = 0.0;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    controller = PageController(initialPage: currentPageValue);
   }
 
   void getChangedPageAndMoveBar(int page) {
     print('page is $page');
-    switch (page) {
-      case 0:
-        _moveBar = 0.05;
-        break;
-      case 1:
-        _moveBar = 0.18;
-        break;
-      case 2:
-        _moveBar = 0.31;
-        break;
-      case 3:
-        _moveBar = 0.44;
-        break;
+
+    if (previousPageValue == 0) {
+      previousPageValue = page;
+      _moveBar = _moveBar + 0.14;
+    } else {
+      if (previousPageValue < page) {
+        previousPageValue = page;
+        _moveBar = _moveBar + 0.14;
+      } else {
+        previousPageValue = page;
+        _moveBar = _moveBar - 0.14;
+      }
     }
 
     setState(() {});
@@ -86,6 +88,7 @@ class _OnBoardingState extends State<OnBoarding> {
       body: SafeArea(
           child: Container(
         child: Stack(
+          alignment: AlignmentDirectional.bottomCenter,
           children: <Widget>[
             PageView.builder(
               physics: ClampingScrollPhysics(),
@@ -98,22 +101,28 @@ class _OnBoardingState extends State<OnBoarding> {
                 return introWidgetsList[index];
               },
             ),
-            Container(
-              alignment: AlignmentDirectional.bottomCenter,
-              padding: EdgeInsets.only(bottom: 35),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  for (var i in introWidgetsList) slidingBar(),
-                ],
-              ),
+            Stack(
+              alignment: AlignmentDirectional.topStart,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(bottom: 35),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      for (var i in introWidgetsList) slidingBar(),
+                    ],
+                  ),
+                ),
+                AnimatedContainer(
+                    duration: Duration(milliseconds: 100),
+                    curve: Curves.fastOutSlowIn,
+                    margin: EdgeInsets.only(
+                        bottom: 35, left: screenWidth * _moveBar),
+                    //left: screenWidth * _moveBar,
+                    child: movingBar()),
+              ],
             ),
-            AnimatedPositioned(
-                duration: Duration(milliseconds: 100),
-                curve: Curves.fastOutSlowIn,
-                bottom: screenheight * 0.1,
-                left: screenWidth * _moveBar,
-                child: movingBar())
           ],
         ),
       )),
@@ -129,12 +138,12 @@ class _OnBoardingState extends State<OnBoarding> {
     );
   }
 
-  Container slidingBar() {
+  Widget slidingBar() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 8),
       height: 5,
       width: screenWidth * 0.1,
-      decoration: BoxDecoration(color: kPruple),
+      decoration: BoxDecoration(color: klightGrey),
     );
   }
 }
