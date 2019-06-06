@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:login_register/ui/onboarding/onboarding.dart';
 import 'package:login_register/utlities/app_colors.dart';
 import 'package:login_register/utlities/hex_color.dart';
+
+import 'onboarding/onboarding_circle.dart';
 
 class Splash extends StatefulWidget {
   @override
@@ -26,7 +27,7 @@ class _SplashState extends State<Splash> {
       // Navigator.of(context).push(MaterialPageRoute(builder: null))
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => OnBoarding()),
+        MaterialPageRoute(builder: (context) => OnBoardingCircle()),
       );
     });
   }
