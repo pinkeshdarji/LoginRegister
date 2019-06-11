@@ -11,3 +11,5 @@ final kGreen = HexColor('00c9ff');
 final kBlue2 = HexColor('92fe9d');
 final kLightOrange = HexColor('ffe29f');
 final kLightRed = HexColor('ff719a');
+final kLighOrange2 = HexColor('fbab66');
+final kPurple = HexColor('f7418c');

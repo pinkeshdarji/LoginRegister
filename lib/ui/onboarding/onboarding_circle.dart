@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:login_register/ui/login/login.dart';
 import 'package:login_register/utlities/app_colors.dart';
 
 import 'intro_widget.dart';
@@ -120,6 +121,28 @@ class _OnBoardingCircleState extends State<OnBoardingCircle> {
                 ),
               ],
             ),
+            Visibility(
+              visible: currentPageValue == introWidgetsList.length - 1
+                  ? true
+                  : false,
+              child: Align(
+                alignment: AlignmentDirectional.bottomEnd,
+                child: Container(
+                  margin: EdgeInsets.only(right: 16, bottom: 16),
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Login()),
+                      );
+                    },
+                    shape: BeveledRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(26))),
+                    child: Icon(Icons.arrow_forward),
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       )),

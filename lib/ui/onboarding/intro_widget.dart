@@ -33,14 +33,11 @@ class IntroWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Hero(
-            tag: 'music',
-            child: Image.asset(
-              image,
-              width: screenWidth * 0.7,
-              height: screenheight * 0.6,
-              fit: BoxFit.cover,
-            ),
+          Image.asset(
+            image,
+            width: screenWidth * 0.7,
+            height: screenheight * 0.6,
+            fit: BoxFit.cover,
           ),
           Container(
             padding: const EdgeInsets.only(left: 12),
