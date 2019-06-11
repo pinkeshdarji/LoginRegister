@@ -113,8 +113,8 @@ class _OnBoardingCircleState extends State<OnBoardingCircle> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       for (int i = 0; i < introWidgetsList.length; i++)
-                        if (i == currentPageValue) ...[expandingBar(true)] else
-                          expandingBar(false),
+                        if (i == currentPageValue) ...[circleBar(true)] else
+                          circleBar(false),
                     ],
                   ),
                 ),
