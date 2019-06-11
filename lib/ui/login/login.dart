@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:login_register/utlities/app_colors.dart';
+import 'package:login_register/utlities/gradient_raised_button.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -16,6 +17,8 @@ class _LoginState extends State<Login> {
   FocusNode emailNode = FocusNode();
   FocusNode passawordNode = FocusNode();
   bool loading = false;
+  String _email;
+  String _password;
 
   @override
   void initState() {
@@ -31,28 +34,33 @@ class _LoginState extends State<Login> {
     screenheight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: Container(
-        constraints: BoxConstraints.expand(),
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: AlignmentDirectional.topCenter,
-                end: AlignmentDirectional.bottomCenter,
-                colors: [kLighOrange2, kPurple])),
-        child: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              children: <Widget>[
-                hiveImage(),
-                _existingLoginSwitch(),
-                _signinSignupForm(),
-                _forgotPassword(),
-                _orDivider(),
-                _socialLogin(),
-              ],
+      body: Stack(
+        children: <Widget>[
+          Container(
+            constraints: BoxConstraints.expand(),
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: AlignmentDirectional.topCenter,
+                    end: AlignmentDirectional.bottomCenter,
+                    colors: [kLighOrange2, kPurple])),
+            child: SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  children: <Widget>[
+                    hiveImage(),
+                    _existingLoginSwitch(),
+                    _signinSignupForm(),
+                    _forgotPassword(),
+                    _orDivider(),
+                    _socialLogin(),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+          loading ? LoadingIndicator() : Container()
+        ],
       ),
     );
   }
@@ -109,53 +117,11 @@ class _LoginState extends State<Login> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            TextFormField(
-                              enabled: true,
-                              enableInteractiveSelection: true,
-                              focusNode: emailNode,
-                              style: CustomTextStyle(),
-                              keyboardType: TextInputType.emailAddress,
-                              textInputAction: TextInputAction.next,
-                              decoration: CustomTextDecoration(
-                                  icon: Icons.email, text: "Email Address"),
-                              textCapitalization: TextCapitalization.none,
-                              onFieldSubmitted: (term) {
-                                emailNode.unfocus();
-                                FocusScope.of(context)
-                                    .requestFocus(passawordNode);
-                              },
-                              validator: (value) {
-                                if (value.isEmpty) {
-                                  return 'Please enter email';
-                                } else if (!new RegExp(
-                                        r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                    .hasMatch(value)) {
-                                  return "Plase enter valid email";
-                                }
-                              },
-                            ),
+                            emailFormField(),
                             SizedBox(
                               height: 10,
                             ),
-                            TextFormField(
-                              enabled: true,
-                              enableInteractiveSelection: true,
-                              obscureText: true,
-                              textInputAction: TextInputAction.done,
-                              style: CustomTextStyle(),
-                              focusNode: passawordNode,
-                              decoration: CustomTextDecoration(
-                                  icon: Icons.lock,
-                                  text: "Password",
-                                  trailingicon: true),
-                              validator: (value) {
-                                if (value.isEmpty) {
-                                  return 'Please enter password';
-                                } else if (value.length < 6) {
-                                  return 'Password must be 6 digit';
-                                }
-                              },
-                            ),
+                            passwordFormField(),
                             SizedBox(
                               height: 30,
                             ),
@@ -231,31 +197,73 @@ class _LoginState extends State<Login> {
         );
   }
 
+  TextFormField passwordFormField() {
+    return TextFormField(
+      enabled: true,
+      enableInteractiveSelection: true,
+      obscureText: true,
+      textInputAction: TextInputAction.done,
+      style: CustomTextStyle(),
+      focusNode: passawordNode,
+      decoration: CustomTextDecoration(
+          icon: Icons.lock, text: "Password", trailingicon: true),
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Please enter password';
+        } else if (value.length < 6) {
+          return 'Password must be 6 digit';
+        }
+      },
+      onSaved: (val) => _password = val,
+    );
+  }
+
+  TextFormField emailFormField() {
+    return TextFormField(
+      enabled: true,
+      enableInteractiveSelection: true,
+      focusNode: emailNode,
+      style: CustomTextStyle(),
+      keyboardType: TextInputType.emailAddress,
+      textInputAction: TextInputAction.next,
+      decoration:
+          CustomTextDecoration(icon: Icons.email, text: "Email Address"),
+      textCapitalization: TextCapitalization.none,
+      onFieldSubmitted: (term) {
+        emailNode.unfocus();
+        FocusScope.of(context).requestFocus(passawordNode);
+      },
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Please enter email';
+        } else if (!new RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+            .hasMatch(value)) {
+          return "Plase enter valid email";
+        }
+      },
+      onSaved: (val) => _email = val,
+    );
+  }
+
   Widget LoginButton(BuildContext context) {
-//    return RaisedGradientButton(
-//        child: Text(
-//          'Button',
-//          style: TextStyle(color: Colors.yellow),
-//        ),
-//        gradient: LinearGradient(
-//          colors: <Color>[Colors.green, Colors.black],
-//        ),
-//        onPressed: () {
-//          print('button clicked');
-//        });
-    return new SizedBox(
-      height: 45.0,
-      width: screenWidth * 0.6,
-      child: new RaisedButton(
-        color: Color.fromRGBO(0, 119, 119, 1.0),
+    return RaisedGradientButton(
         child: Text(
-          "Login".toUpperCase(),
-          style: TextStyle(color: Colors.white70),
+          'Login'.toUpperCase(),
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        height: 80,
+        width: screenWidth * 0.6,
+        gradient: LinearGradient(
+          colors: <Color>[kPruple, kLighOrange2],
         ),
         onPressed: () {
           FocusScope.of(context).requestFocus(new FocusNode());
-          if (_formKey.currentState.validate()) {
-            print(_formKey.currentState.validate());
+          final form = _formKey.currentState;
+
+          if (form.validate()) {
+            form.save();
+            print('email is $_email and password is $_password');
             setState(() {
               loading = true;
             });
@@ -269,7 +277,22 @@ class _LoginState extends State<Login> {
               _autoValidate = true;
             });
           }
-        },
+        });
+  }
+
+  Widget LoadingIndicator() {
+    return Positioned(
+      child: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        color: Colors.black.withOpacity(0.5),
+        child: Center(
+          child: SizedBox(
+            height: 50.0,
+            width: 50.0,
+            child: CircularProgressIndicator(strokeWidth: 0.7),
+          ),
+        ),
       ),
     );
   }
