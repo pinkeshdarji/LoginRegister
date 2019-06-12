@@ -49,7 +49,10 @@ class _LoginState extends State<Login> {
                 padding: EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   children: <Widget>[
-                    hiveImage(),
+                    //hiveImage(),
+                    SizedBox(
+                      height: 50,
+                    ),
                     _existingLoginSwitch(),
                     SizedBox(
                       height: 10,
@@ -78,8 +81,8 @@ class _LoginState extends State<Login> {
   Widget hiveImage() {
     return Image.asset(
       'assets/images/hive.png',
-      width: 300,
-      height: 300,
+      width: 230,
+      height: 230,
     );
   }
 
@@ -90,6 +93,7 @@ class _LoginState extends State<Login> {
         children: <Widget>[
           Container(
             width: screenWidth * 0.7,
+            height: 40,
             padding: EdgeInsets.all(3),
             decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.15),
@@ -112,40 +116,81 @@ class _LoginState extends State<Login> {
             ),
           ),
           Container(
-            width: screenWidth,
-            height: 230,
+            width: screenWidth * .8,
+            height: screenheight * .65,
+            margin: EdgeInsets.only(top: 10),
             child: TabBarView(
               children: [
                 Stack(
                   overflow: Overflow.visible,
                   children: <Widget>[
-                    Card(
-                      color: Colors.white,
-                      child: Form(
-                        key: _formKey,
-                        autovalidate: _autoValidate,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            emailFormField(),
-                            SizedBox(
-                              height: 10,
+                    Column(
+                      children: <Widget>[
+                        hiveImage(),
+                        Container(
+                          height: 190,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
+                            color: Colors.white,
+                          ),
+                          child: Form(
+                            key: _formKey,
+                            autovalidate: _autoValidate,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                emailFormField(),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                passwordFormField(),
+                              ],
                             ),
-                            passwordFormField(),
-                            SizedBox(
-                              height: 50,
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                     Positioned(
                         bottom: 0,
-                        left: screenWidth * 0.15,
+                        left: screenWidth * 0.1,
                         child: LoginButton(context)),
                   ],
                 ),
-                Icon(Icons.directions_transit),
+                Stack(
+                  overflow: Overflow.visible,
+                  children: <Widget>[
+                    Column(
+                      children: <Widget>[
+                        hiveImage(),
+                        Container(
+                          height: 190,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
+                            color: Colors.white,
+                          ),
+                          child: Form(
+                            key: _formKey,
+                            autovalidate: _autoValidate,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                emailFormField(),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                passwordFormField(),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Positioned(
+                        bottom: 0,
+                        left: screenWidth * 0.1,
+                        child: RegisterButton(context)),
+                  ],
+                ),
               ],
             ),
           ),
@@ -219,6 +264,7 @@ class _LoginState extends State<Login> {
         children: <Widget>[
           FloatingActionButton(
             onPressed: () {},
+            mini: true,
             heroTag: 'fab_facebook',
             backgroundColor: Colors.white,
             child: Image.asset(
@@ -228,10 +274,11 @@ class _LoginState extends State<Login> {
             ),
           ),
           SizedBox(
-            width: 30,
+            width: 20,
           ),
           FloatingActionButton(
             onPressed: () {},
+            mini: true,
             heroTag: 'fab_google',
             backgroundColor: Colors.white,
             child: Image.asset(
@@ -329,6 +376,41 @@ class _LoginState extends State<Login> {
     return RaisedGradientButton(
         child: Text(
           'Login'.toUpperCase(),
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        height: 80,
+        width: screenWidth * 0.6,
+        gradient: LinearGradient(
+          colors: <Color>[kPruple, kLighOrange2],
+        ),
+        onPressed: () {
+          FocusScope.of(context).requestFocus(new FocusNode());
+          final form = _formKey.currentState;
+
+          if (form.validate()) {
+            form.save();
+            print('email is $_email and password is $_password');
+            setState(() {
+              loading = true;
+            });
+            Future.delayed(Duration(seconds: 2), () {
+              setState(() {
+                loading = false;
+              });
+            });
+          } else {
+            setState(() {
+              _autoValidate = true;
+            });
+          }
+        });
+  }
+
+  Widget RegisterButton(BuildContext context) {
+    return RaisedGradientButton(
+        child: Text(
+          'Register'.toUpperCase(),
           style: TextStyle(
               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),

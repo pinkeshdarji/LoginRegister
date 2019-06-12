@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:login_register/ui/splash.dart';
+import 'package:login_register/ui/login/login.dart';
 import 'package:login_register/utlities/hex_color.dart';
 
 void main() => runApp(LoginRegister());
@@ -19,7 +19,7 @@ class LoginRegister extends StatelessWidget {
       title: 'Login register',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(brightness: Brightness.dark),
-      home: Splash(),
+      home: Login(),
     );
   }
 }
