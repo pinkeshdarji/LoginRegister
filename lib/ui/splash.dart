@@ -49,15 +49,12 @@ class _SplashState extends State<Splash> {
                       end: AlignmentDirectional.bottomCenter,
                       colors: [_startBgColor, kPrimaryColor])),
             ),
-            Hero(
-              tag: 'music',
-              child: Container(
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage('assets/images/purple.png'))),
-                width: screenWidth * 0.5,
-                height: screenheight * 0.5,
-              ),
+            Container(
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage('assets/images/purple.png'))),
+              width: screenWidth * 0.5,
+              height: screenheight * 0.5,
             ),
             Positioned(
                 right: screenWidth * 0.2, child: CircularProgressIndicator())

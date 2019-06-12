@@ -19,6 +19,7 @@ class _LoginState extends State<Login> {
   bool loading = false;
   String _email;
   String _password;
+  bool isObscurePassword = true;
 
   @override
   void initState() {
@@ -50,9 +51,17 @@ class _LoginState extends State<Login> {
                   children: <Widget>[
                     hiveImage(),
                     _existingLoginSwitch(),
-                    _signinSignupForm(),
+                    SizedBox(
+                      height: 10,
+                    ),
                     _forgotPassword(),
+                    SizedBox(
+                      height: 10,
+                    ),
                     _orDivider(),
+                    SizedBox(
+                      height: 20,
+                    ),
                     _socialLogin(),
                   ],
                 ),
@@ -65,6 +74,7 @@ class _LoginState extends State<Login> {
     );
   }
 
+//  Widget methods
   Widget hiveImage() {
     return Image.asset(
       'assets/images/hive.png',
@@ -103,7 +113,7 @@ class _LoginState extends State<Login> {
           ),
           Container(
             width: screenWidth,
-            height: 170,
+            height: 230,
             child: TabBarView(
               children: [
                 Stack(
@@ -123,14 +133,14 @@ class _LoginState extends State<Login> {
                             ),
                             passwordFormField(),
                             SizedBox(
-                              height: 30,
+                              height: 50,
                             ),
                           ],
                         ),
                       ),
                     ),
                     Positioned(
-                        bottom: 5,
+                        bottom: 0,
                         left: screenWidth * 0.15,
                         child: LoginButton(context)),
                   ],
@@ -144,27 +154,94 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Container _signinSignupForm() {
-    return Container(
-      child: Checkbox(value: true, onChanged: null),
-    );
-  }
-
   Container _forgotPassword() {
     return Container(
-      child: FlutterLogo(),
+      child: InkWell(
+        onTap: () {
+          debugPrint('clicked');
+        },
+        child: Text(
+          'Forgot password?',
+          style: TextStyle(decoration: TextDecoration.underline, fontSize: 15),
+        ),
+      ),
     );
   }
 
   Container _orDivider() {
     return Container(
-      child: FlutterLogo(),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            width: 100,
+            height: 2,
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+              colors: [
+                Colors.white.withOpacity(.1),
+                Colors.white.withOpacity(0.5)
+              ],
+            )),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Container(
+            child: Text(
+              'Or',
+              style: TextStyle(fontSize: 18),
+            ),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Container(
+            width: 100,
+            height: 2,
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+              colors: [
+                Colors.white.withOpacity(0.5),
+                Colors.white.withOpacity(0.1)
+              ],
+            )),
+          ),
+        ],
+      ),
     );
   }
 
   Container _socialLogin() {
     return Container(
-      child: FlutterLogo(),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          FloatingActionButton(
+            onPressed: () {},
+            heroTag: 'fab_facebook',
+            backgroundColor: Colors.white,
+            child: Image.asset(
+              'assets/images/facebook.png',
+              width: 20,
+              height: 20,
+            ),
+          ),
+          SizedBox(
+            width: 30,
+          ),
+          FloatingActionButton(
+            onPressed: () {},
+            heroTag: 'fab_google',
+            backgroundColor: Colors.white,
+            child: Image.asset(
+              'assets/images/Google.png',
+              width: 20,
+              height: 20,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -183,7 +260,10 @@ class _LoginState extends State<Login> {
         prefixIcon: Icon(icon, color: Colors.blueGrey[700]),
         suffixIcon: trailingicon
             ? IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  isObscurePassword = !isObscurePassword;
+                  setState(() {});
+                },
                 icon: Icon(Icons.remove_red_eye),
                 color: Colors.grey,
               )
@@ -201,7 +281,7 @@ class _LoginState extends State<Login> {
     return TextFormField(
       enabled: true,
       enableInteractiveSelection: true,
-      obscureText: true,
+      obscureText: isObscurePassword,
       textInputAction: TextInputAction.done,
       style: CustomTextStyle(),
       focusNode: passawordNode,
