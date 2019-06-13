@@ -569,12 +569,30 @@ class _LoginState extends State<Login> {
       height: 16,
       width: screenWidth * .63,
       padding: EdgeInsets.only(left: 50),
-      child: Text(
-        '8 Character',
-        style: TextStyle(
-            fontSize: 16,
-            color: isContainsRequiredCharacter ? kPurple : Colors.grey,
-            fontWeight: FontWeight.bold),
+      child: Stack(
+        alignment: AlignmentDirectional.centerStart,
+        children: <Widget>[
+          AnimatedDefaultTextStyle(
+              child: Text(
+                '8 Character',
+              ),
+              style: TextStyle(
+                  fontSize: 17,
+                  color: isContainsRequiredCharacter ? Colors.grey : kPurple,
+                  fontWeight: isContainsRequiredCharacter
+                      ? FontWeight.normal
+                      : FontWeight.bold),
+              duration: Duration(milliseconds: 300)),
+          AnimatedContainer(
+            margin: EdgeInsets.only(top: 5),
+            duration: Duration(milliseconds: 400),
+            height: 4,
+            width: isContainsRequiredCharacter ? screenWidth * .25 : 0,
+            decoration: BoxDecoration(
+                color: Colors.greenAccent,
+                borderRadius: BorderRadius.all(Radius.circular(16.0))),
+          )
+        ],
       ),
     );
   }
