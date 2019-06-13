@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:login_register/ui/custom_paint/flower_paint.dart';
+import 'package:login_register/ui/custom_paint/slate.dart';
 import 'package:login_register/utlities/app_colors.dart';
 import 'package:login_register/utlities/gradient_raised_button.dart';
 
@@ -12,7 +14,8 @@ class _LoginState extends State<Login> {
   double screenheight = 0.0;
   bool isSwitched = true;
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _registerFormKey = GlobalKey<FormState>();
   bool _autoValidate = false;
   FocusNode emailNode = FocusNode();
   FocusNode passawordNode = FocusNode();
@@ -134,7 +137,7 @@ class _LoginState extends State<Login> {
                             color: Colors.white,
                           ),
                           child: Form(
-                            key: _formKey,
+                            key: _loginFormKey,
                             autovalidate: _autoValidate,
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
@@ -161,7 +164,10 @@ class _LoginState extends State<Login> {
                   children: <Widget>[
                     Column(
                       children: <Widget>[
-                        hiveImage(),
+                        _passwordGuidePainter(),
+                        SizedBox(
+                          height: 10,
+                        ),
                         Container(
                           height: 190,
                           decoration: BoxDecoration(
@@ -169,7 +175,7 @@ class _LoginState extends State<Login> {
                             color: Colors.white,
                           ),
                           child: Form(
-                            key: _formKey,
+                            key: _registerFormKey,
                             autovalidate: _autoValidate,
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
@@ -386,7 +392,7 @@ class _LoginState extends State<Login> {
         ),
         onPressed: () {
           FocusScope.of(context).requestFocus(new FocusNode());
-          final form = _formKey.currentState;
+          final form = _loginFormKey.currentState;
 
           if (form.validate()) {
             form.save();
@@ -421,7 +427,7 @@ class _LoginState extends State<Login> {
         ),
         onPressed: () {
           FocusScope.of(context).requestFocus(new FocusNode());
-          final form = _formKey.currentState;
+          final form = _registerFormKey.currentState;
 
           if (form.validate()) {
             form.save();
@@ -454,6 +460,52 @@ class _LoginState extends State<Login> {
             width: 50.0,
             child: CircularProgressIndicator(strokeWidth: 0.7),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _flowerPaint() {
+    return CustomPaint(
+      painter: FlowerPaint(),
+      child: Center(
+        child: Container(
+          width: 230,
+          height: 230,
+        ),
+      ),
+    );
+  }
+
+  Widget _passwordGuidePainter() {
+    return CustomPaint(
+      child: Container(
+        width: screenWidth * .7,
+        height: 230,
+      ),
+      foregroundPainter: SlatePainter(),
+    );
+  }
+
+  Widget _passwordGuideWidget() {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+          gradient: LinearGradient(
+              colors: [kPurple.withOpacity(0.2), kLighOrange2.withOpacity(0.3)],
+              stops: [0.2, 0.9],
+              begin: AlignmentDirectional.topStart,
+              end: AlignmentDirectional.bottomCenter)),
+      width: screenWidth * .7,
+      height: 230,
+      child: Center(
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 16),
+          height: 150,
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(8))),
         ),
       ),
     );
