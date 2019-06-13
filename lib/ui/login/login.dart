@@ -24,6 +24,9 @@ class _LoginState extends State<Login> {
   String _password;
   bool isObscurePassword = true;
   bool isContainsRequiredCharacter = false;
+  bool isContainsAtLeastSpecialCharacter = false;
+  bool isContainsUpperCaseCharacter = false;
+  bool isContainsNumber = false;
   int requiredPasswordCharacter = 8;
 
   final passwordController = TextEditingController();
@@ -521,11 +524,11 @@ class _LoginState extends State<Login> {
                   borderRadius: BorderRadius.all(Radius.circular(8))),
             ),
             Positioned(
-                left: 10,
+                left: 5,
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 16),
                   height: 160,
-                  width: screenWidth * .6,
+                  width: screenWidth * .63,
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.all(Radius.circular(8))),
@@ -540,7 +543,21 @@ class _LoginState extends State<Login> {
                     color: Colors.blue,
                   ),
                 ),
-                character(),
+                _specialCharacter(),
+                Container(
+                  width: screenWidth * .63,
+                  child: Divider(
+                    color: Colors.blue,
+                  ),
+                ),
+                _UpperCaseCharacter(),
+                Container(
+                  width: screenWidth * .63,
+                  child: Divider(
+                    color: Colors.blue,
+                  ),
+                ),
+                _Number(),
                 Container(
                   width: screenWidth * .63,
                   child: Divider(
@@ -597,6 +614,105 @@ class _LoginState extends State<Login> {
     );
   }
 
+  Container _specialCharacter() {
+    return Container(
+      height: 16,
+      width: screenWidth * .63,
+      padding: EdgeInsets.only(left: 50),
+      child: Stack(
+        alignment: AlignmentDirectional.centerStart,
+        children: <Widget>[
+          AnimatedDefaultTextStyle(
+              child: Text(
+                '1 Special Character',
+              ),
+              style: TextStyle(
+                  fontSize: 17,
+                  color:
+                      isContainsAtLeastSpecialCharacter ? Colors.grey : kPurple,
+                  fontWeight: isContainsAtLeastSpecialCharacter
+                      ? FontWeight.normal
+                      : FontWeight.bold),
+              duration: Duration(milliseconds: 300)),
+          AnimatedContainer(
+            margin: EdgeInsets.only(top: 5),
+            duration: Duration(milliseconds: 400),
+            height: 4,
+            width: isContainsAtLeastSpecialCharacter ? screenWidth * .38 : 0,
+            decoration: BoxDecoration(
+                color: Colors.greenAccent,
+                borderRadius: BorderRadius.all(Radius.circular(16.0))),
+          )
+        ],
+      ),
+    );
+  }
+
+  Container _UpperCaseCharacter() {
+    return Container(
+      height: 18,
+      width: screenWidth * .63,
+      padding: EdgeInsets.only(left: 50),
+      child: Stack(
+        alignment: AlignmentDirectional.centerStart,
+        children: <Widget>[
+          AnimatedDefaultTextStyle(
+              child: Text(
+                '1 Upper Case',
+              ),
+              style: TextStyle(
+                  fontSize: 17,
+                  color: isContainsUpperCaseCharacter ? Colors.grey : kPurple,
+                  fontWeight: isContainsUpperCaseCharacter
+                      ? FontWeight.normal
+                      : FontWeight.bold),
+              duration: Duration(milliseconds: 300)),
+          AnimatedContainer(
+            margin: EdgeInsets.only(top: 5),
+            duration: Duration(milliseconds: 400),
+            height: 4,
+            width: isContainsUpperCaseCharacter ? screenWidth * .26 : 0,
+            decoration: BoxDecoration(
+                color: Colors.greenAccent,
+                borderRadius: BorderRadius.all(Radius.circular(16.0))),
+          )
+        ],
+      ),
+    );
+  }
+
+  Container _Number() {
+    return Container(
+      height: 18,
+      width: screenWidth * .63,
+      padding: EdgeInsets.only(left: 50),
+      child: Stack(
+        alignment: AlignmentDirectional.centerStart,
+        children: <Widget>[
+          AnimatedDefaultTextStyle(
+              child: Text(
+                '1 Number',
+              ),
+              style: TextStyle(
+                  fontSize: 17,
+                  color: isContainsNumber ? Colors.grey : kPurple,
+                  fontWeight:
+                      isContainsNumber ? FontWeight.normal : FontWeight.bold),
+              duration: Duration(milliseconds: 300)),
+          AnimatedContainer(
+            margin: EdgeInsets.only(top: 5),
+            duration: Duration(milliseconds: 400),
+            height: 4,
+            width: isContainsNumber ? screenWidth * .2 : 0,
+            decoration: BoxDecoration(
+                color: Colors.greenAccent,
+                borderRadius: BorderRadius.all(Radius.circular(16.0))),
+          )
+        ],
+      ),
+    );
+  }
+
   void _onChangePassword() {
     _validatePassword(value: passwordController.text, isRepaint: true);
   }
@@ -621,6 +737,49 @@ class _LoginState extends State<Login> {
       }
     }
 
-    return null;
+    if (value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+      if (isRepaint) {
+        setState(() {
+          isContainsAtLeastSpecialCharacter = true;
+        });
+      }
+    } else {
+      if (isRepaint) {
+        setState(() {
+          isContainsAtLeastSpecialCharacter = false;
+        });
+      }
+      return 'Password must contain at least 1 special character';
+    }
+
+    if (value.contains(RegExp(r'[A-Z]'))) {
+      if (isRepaint) {
+        setState(() {
+          isContainsUpperCaseCharacter = true;
+        });
+      }
+    } else {
+      if (isRepaint) {
+        setState(() {
+          isContainsUpperCaseCharacter = false;
+        });
+      }
+      return 'Password must contain at least 1 Upper Case character';
+    }
+
+    if (value.contains(RegExp(r'[0-9]'))) {
+      if (isRepaint) {
+        setState(() {
+          isContainsNumber = true;
+        });
+      }
+    } else {
+      if (isRepaint) {
+        setState(() {
+          isContainsNumber = false;
+        });
+      }
+      return 'Password must contain at least 1 Number';
+    }
   }
 }

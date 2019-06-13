@@ -9,11 +9,14 @@ class WhiteSlate extends StatelessWidget {
           child: Scaffold(
         backgroundColor: Colors.redAccent,
         body: Center(
-          child: CustomPaint(
-            foregroundPainter: SlatePainter(),
-            child: Container(
-              width: 300,
-              height: 150,
+          child: Transform.rotate(
+            angle: 180,
+            child: CustomPaint(
+              foregroundPainter: SlatePainter(),
+              child: Container(
+                width: 300,
+                height: 150,
+              ),
             ),
           ),
         ),
