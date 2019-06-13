@@ -23,6 +23,10 @@ class _LoginState extends State<Login> {
   String _email;
   String _password;
   bool isObscurePassword = true;
+  bool isContainsRequiredCharacter = false;
+  int requiredPasswordCharacter = 8;
+
+  final passwordController = TextEditingController();
 
   @override
   void initState() {
@@ -30,6 +34,13 @@ class _LoginState extends State<Login> {
     passawordNode = FocusNode();
     emailNode = FocusNode();
     loading = false;
+    passwordController.addListener(_onChangePassword);
+  }
+
+  @override
+  void dispose() {
+    passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -164,7 +175,7 @@ class _LoginState extends State<Login> {
                   children: <Widget>[
                     Column(
                       children: <Widget>[
-                        _passwordGuidePainter(),
+                        _passwordGuideWidget(),
                         SizedBox(
                           height: 10,
                         ),
@@ -332,6 +343,7 @@ class _LoginState extends State<Login> {
 
   TextFormField passwordFormField() {
     return TextFormField(
+      controller: passwordController,
       enabled: true,
       enableInteractiveSelection: true,
       obscureText: isObscurePassword,
@@ -340,12 +352,8 @@ class _LoginState extends State<Login> {
       focusNode: passawordNode,
       decoration: CustomTextDecoration(
           icon: Icons.lock, text: "Password", trailingicon: true),
-      validator: (value) {
-        if (value.isEmpty) {
-          return 'Please enter password';
-        } else if (value.length < 6) {
-          return 'Password must be 6 digit';
-        }
+      validator: (text) {
+        return _validatePassword(value: text);
       },
       onSaved: (val) => _password = val,
     );
@@ -490,24 +498,111 @@ class _LoginState extends State<Login> {
   Widget _passwordGuideWidget() {
     return Container(
       decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(16)),
-          gradient: LinearGradient(
-              colors: [kPurple.withOpacity(0.2), kLighOrange2.withOpacity(0.3)],
-              stops: [0.2, 0.9],
-              begin: AlignmentDirectional.topStart,
-              end: AlignmentDirectional.bottomCenter)),
+        color: Colors.transparent,
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+//          gradient: LinearGradient(
+//              colors: [kPurple.withOpacity(0.2), kLighOrange2.withOpacity(0.3)],
+//              stops: [0.2, 0.9],
+//              begin: AlignmentDirectional.topStart,
+//              end: AlignmentDirectional.bottomCenter)
+      ),
       width: screenWidth * .7,
       height: 230,
       child: Center(
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 16),
-          height: 150,
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(8))),
+        child: Stack(
+          alignment: AlignmentDirectional.center,
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 16),
+              height: 160,
+              width: screenWidth * .99,
+              decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.all(Radius.circular(8))),
+            ),
+            Positioned(
+                left: 10,
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 16),
+                  height: 160,
+                  width: screenWidth * .6,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(8))),
+                )),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                character(),
+                Container(
+                  width: screenWidth * .63,
+                  child: Divider(
+                    color: Colors.blue,
+                  ),
+                ),
+                character(),
+                Container(
+                  width: screenWidth * .63,
+                  child: Divider(
+                    color: Colors.blue,
+                  ),
+                ),
+              ],
+            ),
+            Positioned(
+              left: 50,
+              top: 0,
+              child: Container(
+                width: 2,
+                height: 500,
+                color: Colors.pinkAccent,
+              ),
+            )
+          ],
         ),
       ),
     );
+  }
+
+  Container character() {
+    return Container(
+      height: 16,
+      width: screenWidth * .63,
+      padding: EdgeInsets.only(left: 50),
+      child: Text(
+        '8 Character',
+        style: TextStyle(
+            fontSize: 16,
+            color: isContainsRequiredCharacter ? kPurple : Colors.grey,
+            fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  void _onChangePassword() {
+    _validatePassword(value: passwordController.text, isRepaint: true);
+  }
+
+  String _validatePassword({String value, bool isRepaint = false}) {
+    if (value.isEmpty) {
+      return 'Please enter password';
+    }
+
+    if (value.length < requiredPasswordCharacter) {
+      if (isRepaint) {
+        setState(() {
+          isContainsRequiredCharacter = false;
+        });
+      }
+      return 'Password must be $requiredPasswordCharacter digit';
+    } else {
+      if (isRepaint) {
+        setState(() {
+          isContainsRequiredCharacter = true;
+        });
+      }
+    }
+
+    return null;
   }
 }
