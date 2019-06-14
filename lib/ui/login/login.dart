@@ -28,16 +28,19 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   bool isContainsUpperCaseCharacter = false;
   bool isContainsNumber = false;
   int requiredPasswordCharacter = 8;
+  int isAllValidationPassedCounter = 0;
 
   final passwordController = TextEditingController();
   AnimationController requiredcontroller;
   AnimationController spcialcontroller;
   AnimationController uppercontroller;
   AnimationController numbercontroller;
+  AnimationController okButtonScalecontroller;
   Animation<double> requiredCharacterAnimation;
   Animation<double> spcialCharacterAnimation;
   Animation<double> upperCharacterAnimation;
   Animation<double> numberrAnimation;
+  Animation<double> okButtonScaleAnimation;
 
   @override
   void initState() {
@@ -54,6 +57,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     uppercontroller = AnimationController(
         duration: const Duration(milliseconds: 300), vsync: this);
     numbercontroller = AnimationController(
+        duration: const Duration(milliseconds: 300), vsync: this);
+    okButtonScalecontroller = AnimationController(
         duration: const Duration(milliseconds: 300), vsync: this);
 
     requiredCharacterAnimation = Tween(begin: 0.0, end: 8.0)
@@ -91,6 +96,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
               numbercontroller.reverse();
             }
           });
+
+    okButtonScaleAnimation = Tween(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+            parent: okButtonScalecontroller, curve: Curves.fastOutSlowIn));
   }
 
   @override
@@ -643,7 +652,24 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                 height: 500,
                 color: Colors.pinkAccent,
               ),
-            )
+            ),
+            Positioned(
+              right: 30,
+              bottom: 10,
+              child: ScaleTransition(
+                scale: okButtonScaleAnimation,
+                child: FloatingActionButton(
+                  mini: true,
+                  onPressed: () {},
+                  backgroundColor: Colors.greenAccent,
+                  child: Icon(
+                    Icons.done,
+                    color: Colors.pinkAccent,
+                    size: 25,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -657,7 +683,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     bool isCheck,
   }) {
     return Container(
-      height: 16,
+      height: 19,
       width: screenWidth * .63,
       margin: EdgeInsets.only(left: 20),
       child: Stack(
@@ -853,6 +879,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       return 'Please enter password';
     }
 
+    //Check for required character
     if (value.length < requiredPasswordCharacter) {
       if (isRepaint) {
         setState(() {
@@ -874,6 +901,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       }
     }
 
+    //Special character
     if (value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
       if (isRepaint) {
         setState(() {
@@ -895,6 +923,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       return 'Password must contain at least 1 special character';
     }
 
+    //1 Upper case
     if (value.contains(RegExp(r'[A-Z]'))) {
       if (isRepaint) {
         setState(() {
@@ -916,11 +945,13 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       return 'Password must contain at least 1 Upper Case character';
     }
 
+    //1 Number
     if (value.contains(RegExp(r'[0-9]'))) {
       if (isRepaint) {
         setState(() {
           if (isContainsNumber == false) {
             numbercontroller.forward(from: 0.0);
+            okButtonScalecontroller.forward();
           }
           isContainsNumber = true;
         });
@@ -930,6 +961,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         setState(() {
           if (isContainsNumber == true) {
             numbercontroller.forward(from: 0.0);
+            okButtonScalecontroller.reverse();
           }
           isContainsNumber = false;
         });
