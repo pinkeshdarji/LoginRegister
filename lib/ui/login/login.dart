@@ -9,7 +9,7 @@ class Login extends StatefulWidget {
   _LoginState createState() => _LoginState();
 }
 
-class _LoginState extends State<Login> {
+class _LoginState extends State<Login> with TickerProviderStateMixin {
   double screenWidth = 0.0;
   double screenheight = 0.0;
   bool isSwitched = true;
@@ -30,6 +30,14 @@ class _LoginState extends State<Login> {
   int requiredPasswordCharacter = 8;
 
   final passwordController = TextEditingController();
+  AnimationController requiredcontroller;
+  AnimationController spcialcontroller;
+  AnimationController uppercontroller;
+  AnimationController numbercontroller;
+  Animation<double> requiredCharacterAnimation;
+  Animation<double> spcialCharacterAnimation;
+  Animation<double> upperCharacterAnimation;
+  Animation<double> numberrAnimation;
 
   @override
   void initState() {
@@ -38,6 +46,51 @@ class _LoginState extends State<Login> {
     emailNode = FocusNode();
     loading = false;
     passwordController.addListener(_onChangePassword);
+
+    requiredcontroller = AnimationController(
+        duration: const Duration(milliseconds: 300), vsync: this);
+    spcialcontroller = AnimationController(
+        duration: const Duration(milliseconds: 300), vsync: this);
+    uppercontroller = AnimationController(
+        duration: const Duration(milliseconds: 300), vsync: this);
+    numbercontroller = AnimationController(
+        duration: const Duration(milliseconds: 300), vsync: this);
+
+    requiredCharacterAnimation = Tween(begin: 0.0, end: 8.0)
+        .chain(CurveTween(curve: Curves.elasticIn))
+        .animate(requiredcontroller)
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              requiredcontroller.reverse();
+            }
+          });
+
+    spcialCharacterAnimation = Tween(begin: 0.0, end: 8.0)
+        .chain(CurveTween(curve: Curves.elasticIn))
+        .animate(spcialcontroller)
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              spcialcontroller.reverse();
+            }
+          });
+
+    upperCharacterAnimation = Tween(begin: 0.0, end: 8.0)
+        .chain(CurveTween(curve: Curves.elasticIn))
+        .animate(uppercontroller)
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              uppercontroller.reverse();
+            }
+          });
+
+    numberrAnimation = Tween(begin: 0.0, end: 8.0)
+        .chain(CurveTween(curve: Curves.elasticIn))
+        .animate(numbercontroller)
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              numbercontroller.reverse();
+            }
+          });
   }
 
   @override
@@ -536,28 +589,44 @@ class _LoginState extends State<Login> {
             Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                character(),
+                checkList(
+                    animation: requiredCharacterAnimation,
+                    text: '8 Character',
+                    cutWidth: 0.25,
+                    isCheck: isContainsRequiredCharacter),
                 Container(
                   width: screenWidth * .63,
                   child: Divider(
                     color: Colors.blue,
                   ),
                 ),
-                _specialCharacter(),
+                checkList(
+                    animation: spcialCharacterAnimation,
+                    text: '1 Special Character',
+                    cutWidth: 0.38,
+                    isCheck: isContainsAtLeastSpecialCharacter),
                 Container(
                   width: screenWidth * .63,
                   child: Divider(
                     color: Colors.blue,
                   ),
                 ),
-                _UpperCaseCharacter(),
+                checkList(
+                    animation: upperCharacterAnimation,
+                    text: '1 Upper Case',
+                    cutWidth: 0.26,
+                    isCheck: isContainsUpperCaseCharacter),
                 Container(
                   width: screenWidth * .63,
                   child: Divider(
                     color: Colors.blue,
                   ),
                 ),
-                _Number(),
+                checkList(
+                    animation: numberrAnimation,
+                    text: '1 Number',
+                    cutWidth: 0.2,
+                    isCheck: isContainsNumber),
                 Container(
                   width: screenWidth * .63,
                   child: Divider(
@@ -581,30 +650,46 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Container character() {
+  Container checkList({
+    Animation animation,
+    String text,
+    double cutWidth,
+    bool isCheck,
+  }) {
     return Container(
       height: 16,
       width: screenWidth * .63,
-      padding: EdgeInsets.only(left: 50),
+      margin: EdgeInsets.only(left: 20),
       child: Stack(
         alignment: AlignmentDirectional.centerStart,
         children: <Widget>[
-          AnimatedDefaultTextStyle(
-              child: Text(
-                '8 Character',
-              ),
-              style: TextStyle(
-                  fontSize: 17,
-                  color: isContainsRequiredCharacter ? Colors.grey : kPurple,
-                  fontWeight: isContainsRequiredCharacter
-                      ? FontWeight.normal
-                      : FontWeight.bold),
-              duration: Duration(milliseconds: 300)),
+          AnimatedBuilder(
+            animation: animation,
+            builder: (context, child) {
+              return Container(
+                // margin: EdgeInsets.symmetric(horizontal: 24.0),
+                padding: EdgeInsets.only(
+                  left: animation.value + 40,
+                  //right: 24.0 - offsetAnimation.value
+                ),
+                child: AnimatedDefaultTextStyle(
+                    child: Text(
+                      text,
+                    ),
+                    style: TextStyle(
+                        fontSize: 17,
+                        color: isCheck ? Colors.grey : kPruple,
+                        fontWeight:
+                            isCheck ? FontWeight.normal : FontWeight.bold),
+                    duration: Duration(milliseconds: 300)),
+              );
+            },
+          ),
           AnimatedContainer(
-            margin: EdgeInsets.only(top: 5),
+            margin: EdgeInsets.only(top: 5, left: 35),
             duration: Duration(milliseconds: 400),
             height: 4,
-            width: isContainsRequiredCharacter ? screenWidth * .25 : 0,
+            width: isCheck ? screenWidth * cutWidth : 0,
             decoration: BoxDecoration(
                 color: Colors.greenAccent,
                 borderRadius: BorderRadius.all(Radius.circular(16.0))),
@@ -614,104 +699,150 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Container _specialCharacter() {
-    return Container(
-      height: 16,
-      width: screenWidth * .63,
-      padding: EdgeInsets.only(left: 50),
-      child: Stack(
-        alignment: AlignmentDirectional.centerStart,
-        children: <Widget>[
-          AnimatedDefaultTextStyle(
-              child: Text(
-                '1 Special Character',
-              ),
-              style: TextStyle(
-                  fontSize: 17,
-                  color:
-                      isContainsAtLeastSpecialCharacter ? Colors.grey : kPurple,
-                  fontWeight: isContainsAtLeastSpecialCharacter
-                      ? FontWeight.normal
-                      : FontWeight.bold),
-              duration: Duration(milliseconds: 300)),
-          AnimatedContainer(
-            margin: EdgeInsets.only(top: 5),
-            duration: Duration(milliseconds: 400),
-            height: 4,
-            width: isContainsAtLeastSpecialCharacter ? screenWidth * .38 : 0,
-            decoration: BoxDecoration(
-                color: Colors.greenAccent,
-                borderRadius: BorderRadius.all(Radius.circular(16.0))),
-          )
-        ],
-      ),
-    );
-  }
-
-  Container _UpperCaseCharacter() {
-    return Container(
-      height: 18,
-      width: screenWidth * .63,
-      padding: EdgeInsets.only(left: 50),
-      child: Stack(
-        alignment: AlignmentDirectional.centerStart,
-        children: <Widget>[
-          AnimatedDefaultTextStyle(
-              child: Text(
-                '1 Upper Case',
-              ),
-              style: TextStyle(
-                  fontSize: 17,
-                  color: isContainsUpperCaseCharacter ? Colors.grey : kPurple,
-                  fontWeight: isContainsUpperCaseCharacter
-                      ? FontWeight.normal
-                      : FontWeight.bold),
-              duration: Duration(milliseconds: 300)),
-          AnimatedContainer(
-            margin: EdgeInsets.only(top: 5),
-            duration: Duration(milliseconds: 400),
-            height: 4,
-            width: isContainsUpperCaseCharacter ? screenWidth * .26 : 0,
-            decoration: BoxDecoration(
-                color: Colors.greenAccent,
-                borderRadius: BorderRadius.all(Radius.circular(16.0))),
-          )
-        ],
-      ),
-    );
-  }
-
-  Container _Number() {
-    return Container(
-      height: 18,
-      width: screenWidth * .63,
-      padding: EdgeInsets.only(left: 50),
-      child: Stack(
-        alignment: AlignmentDirectional.centerStart,
-        children: <Widget>[
-          AnimatedDefaultTextStyle(
-              child: Text(
-                '1 Number',
-              ),
-              style: TextStyle(
-                  fontSize: 17,
-                  color: isContainsNumber ? Colors.grey : kPurple,
-                  fontWeight:
-                      isContainsNumber ? FontWeight.normal : FontWeight.bold),
-              duration: Duration(milliseconds: 300)),
-          AnimatedContainer(
-            margin: EdgeInsets.only(top: 5),
-            duration: Duration(milliseconds: 400),
-            height: 4,
-            width: isContainsNumber ? screenWidth * .2 : 0,
-            decoration: BoxDecoration(
-                color: Colors.greenAccent,
-                borderRadius: BorderRadius.all(Radius.circular(16.0))),
-          )
-        ],
-      ),
-    );
-  }
+//  Container character() {
+//    return Container(
+//      height: 16,
+//      width: screenWidth * .63,
+//      margin: EdgeInsets.only(left: 20),
+//      child: Stack(
+//        alignment: AlignmentDirectional.centerStart,
+//        children: <Widget>[
+//          AnimatedBuilder(
+//            animation: offsetAnimation,
+//            builder: (context, child) {
+//              return Container(
+//                // margin: EdgeInsets.symmetric(horizontal: 24.0),
+//                padding: EdgeInsets.only(
+//                  left: offsetAnimation.value + 40,
+//                  //right: 24.0 - offsetAnimation.value
+//                ),
+//                child: AnimatedDefaultTextStyle(
+//                    child: Text(
+//                      '8 Character',
+//                    ),
+//                    style: TextStyle(
+//                        fontSize: 17,
+//                        color:
+//                            isContainsRequiredCharacter ? Colors.grey : kPruple,
+//                        fontWeight: isContainsRequiredCharacter
+//                            ? FontWeight.normal
+//                            : FontWeight.bold),
+//                    duration: Duration(milliseconds: 300)),
+//              );
+//            },
+//          ),
+//          AnimatedContainer(
+//            margin: EdgeInsets.only(top: 5, left: 35),
+//            duration: Duration(milliseconds: 400),
+//            height: 4,
+//            width: isContainsRequiredCharacter ? screenWidth * .25 : 0,
+//            decoration: BoxDecoration(
+//                color: Colors.greenAccent,
+//                borderRadius: BorderRadius.all(Radius.circular(16.0))),
+//          )
+//        ],
+//      ),
+//    );
+//  }
+//
+//  Container _specialCharacter() {
+//    return Container(
+//      height: 16,
+//      width: screenWidth * .63,
+//      padding: EdgeInsets.only(left: 50),
+//      child: Stack(
+//        alignment: AlignmentDirectional.centerStart,
+//        children: <Widget>[
+//          AnimatedDefaultTextStyle(
+//              child: Text(
+//                '1 Special Character',
+//              ),
+//              style: TextStyle(
+//                  fontSize: 17,
+//                  color:
+//                      isContainsAtLeastSpecialCharacter ? Colors.grey : kPruple,
+//                  fontWeight: isContainsAtLeastSpecialCharacter
+//                      ? FontWeight.normal
+//                      : FontWeight.bold),
+//              duration: Duration(milliseconds: 300)),
+//          AnimatedContainer(
+//            margin: EdgeInsets.only(top: 5),
+//            duration: Duration(milliseconds: 400),
+//            height: 4,
+//            width: isContainsAtLeastSpecialCharacter ? screenWidth * .38 : 0,
+//            decoration: BoxDecoration(
+//                color: Colors.greenAccent,
+//                borderRadius: BorderRadius.all(Radius.circular(16.0))),
+//          )
+//        ],
+//      ),
+//    );
+//  }
+//
+//  Container _UpperCaseCharacter() {
+//    return Container(
+//      height: 18,
+//      width: screenWidth * .63,
+//      padding: EdgeInsets.only(left: 50),
+//      child: Stack(
+//        alignment: AlignmentDirectional.centerStart,
+//        children: <Widget>[
+//          AnimatedDefaultTextStyle(
+//              child: Text(
+//                '1 Upper Case',
+//              ),
+//              style: TextStyle(
+//                  fontSize: 17,
+//                  color: isContainsUpperCaseCharacter ? Colors.grey : kPruple,
+//                  fontWeight: isContainsUpperCaseCharacter
+//                      ? FontWeight.normal
+//                      : FontWeight.bold),
+//              duration: Duration(milliseconds: 300)),
+//          AnimatedContainer(
+//            margin: EdgeInsets.only(top: 5),
+//            duration: Duration(milliseconds: 400),
+//            height: 4,
+//            width: isContainsUpperCaseCharacter ? screenWidth * .26 : 0,
+//            decoration: BoxDecoration(
+//                color: Colors.greenAccent,
+//                borderRadius: BorderRadius.all(Radius.circular(16.0))),
+//          )
+//        ],
+//      ),
+//    );
+//  }
+//
+//  Container _Number() {
+//    return Container(
+//      height: 18,
+//      width: screenWidth * .63,
+//      padding: EdgeInsets.only(left: 50),
+//      child: Stack(
+//        alignment: AlignmentDirectional.centerStart,
+//        children: <Widget>[
+//          AnimatedDefaultTextStyle(
+//              child: Text(
+//                '1 Number',
+//              ),
+//              style: TextStyle(
+//                  fontSize: 17,
+//                  color: isContainsNumber ? Colors.grey : kPruple,
+//                  fontWeight:
+//                      isContainsNumber ? FontWeight.normal : FontWeight.bold),
+//              duration: Duration(milliseconds: 300)),
+//          AnimatedContainer(
+//            margin: EdgeInsets.only(top: 5),
+//            duration: Duration(milliseconds: 400),
+//            height: 4,
+//            width: isContainsNumber ? screenWidth * .2 : 0,
+//            decoration: BoxDecoration(
+//                color: Colors.greenAccent,
+//                borderRadius: BorderRadius.all(Radius.circular(16.0))),
+//          )
+//        ],
+//      ),
+//    );
+//  }
 
   void _onChangePassword() {
     _validatePassword(value: passwordController.text, isRepaint: true);
@@ -725,6 +856,9 @@ class _LoginState extends State<Login> {
     if (value.length < requiredPasswordCharacter) {
       if (isRepaint) {
         setState(() {
+          if (isContainsRequiredCharacter == true) {
+            requiredcontroller.forward(from: 0.0);
+          }
           isContainsRequiredCharacter = false;
         });
       }
@@ -732,6 +866,9 @@ class _LoginState extends State<Login> {
     } else {
       if (isRepaint) {
         setState(() {
+          if (isContainsRequiredCharacter == false) {
+            requiredcontroller.forward(from: 0.0);
+          }
           isContainsRequiredCharacter = true;
         });
       }
@@ -740,12 +877,18 @@ class _LoginState extends State<Login> {
     if (value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
       if (isRepaint) {
         setState(() {
+          if (isContainsAtLeastSpecialCharacter == false) {
+            spcialcontroller.forward(from: 0.0);
+          }
           isContainsAtLeastSpecialCharacter = true;
         });
       }
     } else {
       if (isRepaint) {
         setState(() {
+          if (isContainsAtLeastSpecialCharacter == true) {
+            spcialcontroller.forward(from: 0.0);
+          }
           isContainsAtLeastSpecialCharacter = false;
         });
       }
@@ -755,12 +898,18 @@ class _LoginState extends State<Login> {
     if (value.contains(RegExp(r'[A-Z]'))) {
       if (isRepaint) {
         setState(() {
+          if (isContainsUpperCaseCharacter == false) {
+            uppercontroller.forward(from: 0.0);
+          }
           isContainsUpperCaseCharacter = true;
         });
       }
     } else {
       if (isRepaint) {
         setState(() {
+          if (isContainsUpperCaseCharacter == true) {
+            uppercontroller.forward(from: 0.0);
+          }
           isContainsUpperCaseCharacter = false;
         });
       }
@@ -770,12 +919,18 @@ class _LoginState extends State<Login> {
     if (value.contains(RegExp(r'[0-9]'))) {
       if (isRepaint) {
         setState(() {
+          if (isContainsNumber == false) {
+            numbercontroller.forward(from: 0.0);
+          }
           isContainsNumber = true;
         });
       }
     } else {
       if (isRepaint) {
         setState(() {
+          if (isContainsNumber == true) {
+            numbercontroller.forward(from: 0.0);
+          }
           isContainsNumber = false;
         });
       }
