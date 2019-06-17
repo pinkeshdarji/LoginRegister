@@ -1,8 +1,15 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:login_register/ui/custom_paint/flower_paint.dart';
 import 'package:login_register/ui/custom_paint/slate.dart';
+import 'package:login_register/ui/networking/requests/signup.dart';
+import 'package:login_register/ui/networking/response/user.dart';
 import 'package:login_register/utlities/app_colors.dart';
 import 'package:login_register/utlities/gradient_raised_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -42,9 +49,15 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   Animation<double> numberrAnimation;
   Animation<double> okButtonScaleAnimation;
 
+  SharedPreferences prefs;
+  final String kUser = 'user';
+
   @override
   void initState() {
     super.initState();
+
+    _loadSettings();
+
     passawordNode = FocusNode();
     emailNode = FocusNode();
     loading = false;
@@ -100,6 +113,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     okButtonScaleAnimation = Tween(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
             parent: okButtonScalecontroller, curve: Curves.fastOutSlowIn));
+  }
+
+  void _loadSettings() async {
+    prefs = await SharedPreferences.getInstance();
   }
 
   @override
@@ -417,9 +434,9 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       focusNode: passawordNode,
       decoration: CustomTextDecoration(
           icon: Icons.lock, text: "Password", trailingicon: true),
-      validator: (text) {
-        return _validatePassword(value: text);
-      },
+//      validator: (text) {
+//        return _validatePassword(value: text);
+//      },
       onSaved: (val) => _password = val,
     );
   }
@@ -498,13 +515,26 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         gradient: LinearGradient(
           colors: <Color>[kPruple, kLighOrange2],
         ),
-        onPressed: () {
+        onPressed: () async {
           FocusScope.of(context).requestFocus(new FocusNode());
           final form = _registerFormKey.currentState;
 
           if (form.validate()) {
             form.save();
             print('email is $_email and password is $_password');
+
+            Signup signupResquest = Signup(email: _email, password: _password);
+//            User user = await createUser('https://reqres.in/api/register',
+//                body: signupResquest.toJson());
+            User user = await createUserDio('https://reqres.in/api/register',
+                body: signupResquest.toJson());
+
+            if (prefs == null) {
+              print('shared null');
+            }
+            prefs.setString(kUser, jsonEncode(user));
+            print('save ${prefs.getString(kUser) ?? ''}');
+
             setState(() {
               loading = true;
             });
@@ -519,6 +549,30 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             });
           }
         });
+  }
+
+  Future<User> createUser(String url, {Map body}) async {
+    return http.post(url, body: body).then((http.Response response) {
+      final int statusCode = response.statusCode;
+
+      if (statusCode < 200 || statusCode > 400) {
+        throw new Exception("Error while fetching data");
+      }
+      return User.fromJson(jsonDecode(response.body));
+    });
+  }
+
+  Future<User> createUserDio(String url, {Map body}) async {
+    Dio dio = new Dio();
+
+    return dio.post(url, data: body).then((Response response) {
+      final int statusCode = response.statusCode;
+
+      if (statusCode < 200 || statusCode > 400) {
+        throw new Exception("Error while fetching data");
+      }
+      return User.fromJson(response.data);
+    });
   }
 
   Widget LoadingIndicator() {
