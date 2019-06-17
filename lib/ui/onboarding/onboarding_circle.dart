@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:login_register/ui/login/login.dart';
 import 'package:login_register/utlities/app_colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'intro_widget.dart';
 
@@ -17,13 +18,27 @@ class _OnBoardingCircleState extends State<OnBoardingCircle> {
   int previousPageValue = 0;
   PageController controller;
   double _moveBar = 0.0;
+  SharedPreferences prefs;
+  final String onBoardingStatus = 'onBoardingStatus';
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _loadSettings();
 
     controller = PageController(initialPage: currentPageValue);
+  }
+
+  void _loadSettings() async {
+    prefs = await SharedPreferences.getInstance();
+
+    if (prefs.getBool(onBoardingStatus ?? true)) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Login()),
+      );
+    }
   }
 
   void getChangedPageAndMoveBar(int page) {
@@ -131,6 +146,7 @@ class _OnBoardingCircleState extends State<OnBoardingCircle> {
                   margin: EdgeInsets.only(right: 16, bottom: 16),
                   child: FloatingActionButton(
                     onPressed: () {
+                      prefs.setBool(onBoardingStatus, true);
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => Login()),

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:login_register/ui/custom_paint/flower_paint.dart';
 import 'package:login_register/ui/custom_paint/slate.dart';
+import 'package:login_register/ui/home/home.dart';
 import 'package:login_register/ui/networking/requests/signup.dart';
 import 'package:login_register/ui/networking/response/user.dart';
 import 'package:login_register/utlities/app_colors.dart';
@@ -480,19 +481,33 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         gradient: LinearGradient(
           colors: <Color>[kPruple, kLighOrange2],
         ),
-        onPressed: () {
+        onPressed: () async {
           FocusScope.of(context).requestFocus(new FocusNode());
           final form = _loginFormKey.currentState;
 
           if (form.validate()) {
             form.save();
             print('email is $_email and password is $_password');
+
+            Signup signupResquest = Signup(email: _email, password: _password);
+//            User user = await createUser('https://reqres.in/api/register',
+//                body: signupResquest.toJson());
+            User user = await singIn('https://reqres.in/api/login',
+                body: signupResquest.toJson());
+
+            prefs.setString(kUser, jsonEncode(user));
+            print('save ${prefs.getString(kUser) ?? ''}');
+
             setState(() {
               loading = true;
             });
             Future.delayed(Duration(seconds: 2), () {
               setState(() {
                 loading = false;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Home()),
+                );
               });
             });
           } else {
@@ -541,6 +556,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             Future.delayed(Duration(seconds: 2), () {
               setState(() {
                 loading = false;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Home()),
+                );
               });
             });
           } else {
@@ -563,6 +582,19 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   }
 
   Future<User> createUserDio(String url, {Map body}) async {
+    Dio dio = new Dio();
+
+    return dio.post(url, data: body).then((Response response) {
+      final int statusCode = response.statusCode;
+
+      if (statusCode < 200 || statusCode > 400) {
+        throw new Exception("Error while fetching data");
+      }
+      return User.fromJson(response.data);
+    });
+  }
+
+  Future<User> singIn(String url, {Map body}) async {
     Dio dio = new Dio();
 
     return dio.post(url, data: body).then((Response response) {
