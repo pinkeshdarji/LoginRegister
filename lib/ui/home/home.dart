@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:login_register/ui/login/login.dart';
+import 'package:login_register/utlities/shared_pref_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
@@ -45,8 +46,8 @@ class _HomeState extends State<Home> {
   }
 
   void _logout() {
-    prefs.setString(kUser, '');
-    Navigator.push(
+    SharedPreferencesHelper.logout(prefs);
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => Login()),
     );

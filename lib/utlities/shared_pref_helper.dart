@@ -25,6 +25,11 @@ class SharedPreferencesHelper {
     return prefs.setString(kUser, value);
   }
 
+  ///Logout
+  static Future<bool> logout(SharedPreferences prefs) {
+    return prefs.clear();
+  }
+
   ///-----------------
   ///Save boolean values
   ///------------------

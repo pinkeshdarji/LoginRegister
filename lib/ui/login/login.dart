@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 import 'package:login_register/ui/custom_paint/flower_paint.dart';
 import 'package:login_register/ui/custom_paint/slate.dart';
 import 'package:login_register/ui/home/home.dart';
@@ -11,6 +12,7 @@ import 'package:login_register/ui/networking/response/user.dart';
 import 'package:login_register/utlities/app_colors.dart';
 import 'package:login_register/utlities/gradient_raised_button.dart';
 import 'package:login_register/utlities/shared_pref_helper.dart';
+import 'package:login_register/utlities/strings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
@@ -52,6 +54,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   Animation<double> okButtonScaleAnimation;
 
   SharedPreferences prefs;
+  Logger logger;
 
   @override
   void initState() {
@@ -118,6 +121,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
 
   void _loadSettings() async {
     prefs = await SharedPreferences.getInstance();
+    logger = Logger();
   }
 
   @override
@@ -204,7 +208,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
               tabs: [
                 Tab(
                   child: Text(
-                    'Existing',
+                    Strings.existing,
                     style: TextStyle(fontSize: 12),
                   ),
                 ),
@@ -306,7 +310,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
           debugPrint('clicked');
         },
         child: Text(
-          'Forgot password?',
+          Strings.forgot_password,
           style: TextStyle(decoration: TextDecoration.underline, fontSize: 15),
         ),
       ),
@@ -334,7 +338,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
           ),
           Container(
             child: Text(
-              'Or',
+              Strings.or,
               style: TextStyle(fontSize: 18),
             ),
           ),
@@ -434,7 +438,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       style: CustomTextStyle(),
       focusNode: passawordNode,
       decoration: CustomTextDecoration(
-          icon: Icons.lock, text: "Password", trailingicon: true),
+          icon: Icons.lock, text: Strings.password, trailingicon: true),
 //      validator: (text) {
 //        return _validatePassword(value: text);
 //      },
@@ -451,7 +455,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       keyboardType: TextInputType.emailAddress,
       textInputAction: TextInputAction.next,
       decoration:
-          CustomTextDecoration(icon: Icons.email, text: "Email Address"),
+          CustomTextDecoration(icon: Icons.email, text: Strings.email_address),
       textCapitalization: TextCapitalization.none,
       onFieldSubmitted: (term) {
         emailNode.unfocus();
@@ -472,7 +476,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   Widget LoginButton(BuildContext context) {
     return RaisedGradientButton(
         child: Text(
-          'Login'.toUpperCase(),
+          Strings.login.toUpperCase(),
           style: TextStyle(
               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
@@ -482,6 +486,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
           colors: <Color>[kPruple, kLighOrange2],
         ),
         onPressed: () async {
+          logger.d('login clicked');
           FocusScope.of(context).requestFocus(new FocusNode());
           final form = _loginFormKey.currentState;
 
@@ -504,7 +509,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             Future.delayed(Duration(seconds: 2), () {
               setState(() {
                 loading = false;
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => Home()),
                 );
@@ -521,7 +526,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   Widget RegisterButton(BuildContext context) {
     return RaisedGradientButton(
         child: Text(
-          'Register'.toUpperCase(),
+          Strings.register.toUpperCase(),
           style: TextStyle(
               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
@@ -553,7 +558,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             Future.delayed(Duration(seconds: 2), () {
               setState(() {
                 loading = false;
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => Home()),
                 );
@@ -683,7 +688,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
               children: <Widget>[
                 checkList(
                     animation: requiredCharacterAnimation,
-                    text: '8 Character',
+                    text: Strings.character_limit,
                     cutWidth: 0.25,
                     isCheck: isContainsRequiredCharacter),
                 Container(
@@ -694,7 +699,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                 ),
                 checkList(
                     animation: spcialCharacterAnimation,
-                    text: '1 Special Character',
+                    text: Strings.special_character_limit,
                     cutWidth: 0.38,
                     isCheck: isContainsAtLeastSpecialCharacter),
                 Container(
@@ -705,7 +710,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                 ),
                 checkList(
                     animation: upperCharacterAnimation,
-                    text: '1 Upper Case',
+                    text: Strings.upper_character_limit,
                     cutWidth: 0.26,
                     isCheck: isContainsUpperCaseCharacter),
                 Container(
@@ -716,7 +721,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                 ),
                 checkList(
                     animation: numberrAnimation,
-                    text: '1 Number',
+                    text: Strings.number_limit,
                     cutWidth: 0.2,
                     isCheck: isContainsNumber),
                 Container(
