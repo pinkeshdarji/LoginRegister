@@ -10,6 +10,7 @@ import 'package:login_register/ui/networking/requests/signup.dart';
 import 'package:login_register/ui/networking/response/user.dart';
 import 'package:login_register/utlities/app_colors.dart';
 import 'package:login_register/utlities/gradient_raised_button.dart';
+import 'package:login_register/utlities/shared_pref_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
@@ -51,7 +52,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   Animation<double> okButtonScaleAnimation;
 
   SharedPreferences prefs;
-  final String kUser = 'user';
 
   @override
   void initState() {
@@ -495,8 +495,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             User user = await singIn('https://reqres.in/api/login',
                 body: signupResquest.toJson());
 
-            prefs.setString(kUser, jsonEncode(user));
-            print('save ${prefs.getString(kUser) ?? ''}');
+            SharedPreferencesHelper.setUser(jsonEncode(user), prefs);
+            print('save ${SharedPreferencesHelper.getUser(prefs)}');
 
             setState(() {
               loading = true;
@@ -544,11 +544,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             User user = await createUserDio('https://reqres.in/api/register',
                 body: signupResquest.toJson());
 
-            if (prefs == null) {
-              print('shared null');
-            }
-            prefs.setString(kUser, jsonEncode(user));
-            print('save ${prefs.getString(kUser) ?? ''}');
+            SharedPreferencesHelper.setUser(jsonEncode(user), prefs);
+            print('save ${SharedPreferencesHelper.getUser(prefs)}');
 
             setState(() {
               loading = true;

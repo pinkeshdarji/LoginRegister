@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:login_register/utlities/app_colors.dart';
 import 'package:login_register/utlities/hex_color.dart';
+import 'package:login_register/utlities/shared_pref_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'home/home.dart';
@@ -21,41 +22,31 @@ class _SplashState extends State<Splash> {
   double screenheight = 0.0;
 
   SharedPreferences prefs;
-  final String onBoardingStatus = 'onBoardingStatus';
-  final String kUser = 'user';
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-
     _loadSettings();
   }
 
   void _loadSettings() async {
     prefs = await SharedPreferences.getInstance();
-
     //Timer(Duration(seconds: 2), () => print('hi'));
     Future.delayed(Duration(seconds: 2), () {
-      if (prefs.getBool(onBoardingStatus ?? false) == true) {
-        if (prefs.getString(kUser ?? '') == '') {
+      if (SharedPreferencesHelper.getOnBoardingStatus(prefs) == true) {
+        if (SharedPreferencesHelper.getUser(prefs) == '') {
           //User is not logged in
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Login()),
-          );
+          Route route = MaterialPageRoute(builder: (context) => Login());
+          Navigator.pushReplacement(context, route);
         } else {
           //User is logged in
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Home()),
-          );
+          Route route = MaterialPageRoute(builder: (context) => Home());
+          Navigator.pushReplacement(context, route);
         }
       } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => OnBoardingCircle()),
-        );
+        Route route =
+            MaterialPageRoute(builder: (context) => OnBoardingCircle());
+        Navigator.pushReplacement(context, route);
       }
     });
   }
