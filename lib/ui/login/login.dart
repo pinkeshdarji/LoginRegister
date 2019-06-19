@@ -502,7 +502,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             User user =
                 await api.singIn('/api/login', body: signupResquest.toJson());
 
-
             SharedPreferencesHelper.setUser(jsonEncode(user), prefs);
             logger.d('save ${SharedPreferencesHelper.getUser(prefs)}');
 
