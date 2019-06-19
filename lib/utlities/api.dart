@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:login_register/ui/networking/response/user.dart';
 import 'package:login_register/utlities/app_constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Api {
   final String STAGING_BASE_URL = "https://reqres.in";
@@ -27,8 +26,7 @@ class Api {
   ///SignIn
   Future<User> singIn(String path, {Map body}) async {
     try {
-      Response response =
-          await dio.post(path, data: body, options: Options());
+      Response response = await dio.post(path, data: body, options: Options());
       final int statusCode = response.statusCode;
       if (statusCode < 200 || statusCode > 400) {
         throw new Exception("Error while fetching data");
