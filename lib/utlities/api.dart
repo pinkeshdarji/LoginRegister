@@ -28,7 +28,7 @@ class Api {
   Future<User> singIn(String path, {Map body}) async {
     try {
       Response response =
-          await dio.post(path, data: body, options: Options(he));
+          await dio.post(path, data: body, options: Options());
       final int statusCode = response.statusCode;
       if (statusCode < 200 || statusCode > 400) {
         throw new Exception("Error while fetching data");
