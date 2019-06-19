@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:login_register/ui/networking/response/user.dart';
 import 'package:login_register/utlities/app_constants.dart';
+import 'package:login_register/utlities/strings.dart';
 
 class Api {
   final String STAGING_BASE_URL = "https://reqres.in";
@@ -24,13 +25,10 @@ class Api {
   }
 
   ///SignIn
-  Future<User> singIn(String path, {Map body}) async {
+  Future<Object> singIn(String path, {Map body}) async {
     try {
       Response response = await dio.post(path, data: body, options: Options());
-      final int statusCode = response.statusCode;
-      if (statusCode < 200 || statusCode > 400) {
-        throw new Exception("Error while fetching data");
-      }
+      //final int statusCode = response.statusCode;
       return User.fromJson(response.data);
     } on DioError catch (e) {
       // The request was made and the server responded with a status code
@@ -43,6 +41,9 @@ class Api {
                   For request ${e.request}
                   And Response ${e.response != null ? 'request => ${e.response.request} and data => ${e.response.data} headers => ${e.response.headers}' : 'request is ${e.request}'}
                   Stacktrace is ${e.stackTrace}''');
+      return e.response != null
+          ? e.response.data.toString()
+          : Strings.something_went_wrong;
     }
   }
 

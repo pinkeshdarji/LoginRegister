@@ -27,6 +27,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
 
   final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _registerFormKey = GlobalKey<FormState>();
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
   bool _autoValidate = false;
   FocusNode emailNode = FocusNode();
   FocusNode passawordNode = FocusNode();
@@ -138,6 +139,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     screenheight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      key: scaffoldKey,
       body: Stack(
         children: <Widget>[
           Container(
@@ -499,24 +501,29 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             Signup signupResquest = Signup(email: _email, password: _password);
 //            User user = await createUser('https://reqres.in/api/register',
 //                body: signupResquest.toJson());
-            User user =
+            var apiResponseResult =
                 await api.singIn('/api/login', body: signupResquest.toJson());
 
-            SharedPreferencesHelper.setUser(jsonEncode(user), prefs);
-            logger.d('save ${SharedPreferencesHelper.getUser(prefs)}');
-
-            setState(() {
-              loading = true;
-            });
-            Future.delayed(Duration(seconds: 2), () {
+            if (apiResponseResult is User) {
+              User user = apiResponseResult;
+              SharedPreferencesHelper.setUser(jsonEncode(user), prefs);
+              logger.d('save ${SharedPreferencesHelper.getUser(prefs)}');
               setState(() {
-                loading = false;
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => Home()),
-                );
+                loading = true;
               });
-            });
+              Future.delayed(Duration(seconds: 2), () {
+                setState(() {
+                  loading = false;
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => Home()),
+                  );
+                });
+              });
+            } else {
+              String dioError = apiResponseResult;
+              _showSnackBar(dioError);
+            }
           } else {
             setState(() {
               _autoValidate = true;
@@ -1032,5 +1039,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       }
       return 'Password must contain at least 1 Number';
     }
+  }
+
+  void _showSnackBar(String text) {
+    scaffoldKey.currentState
+        .showSnackBar(new SnackBar(content: new Text(text)));
   }
 }

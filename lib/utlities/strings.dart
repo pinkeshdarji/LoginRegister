@@ -10,4 +10,5 @@ class Strings {
   static String number_limit = '1 Number';
   static String email_address = 'Email Address';
   static String password = 'password';
+  static String something_went_wrong = 'Oops something went wrong!';
 }
