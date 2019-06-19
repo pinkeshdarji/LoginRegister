@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
@@ -9,6 +8,7 @@ import 'package:login_register/ui/custom_paint/slate.dart';
 import 'package:login_register/ui/home/home.dart';
 import 'package:login_register/ui/networking/requests/signup.dart';
 import 'package:login_register/ui/networking/response/user.dart';
+import 'package:login_register/utlities/api.dart';
 import 'package:login_register/utlities/app_colors.dart';
 import 'package:login_register/utlities/gradient_raised_button.dart';
 import 'package:login_register/utlities/shared_pref_helper.dart';
@@ -55,12 +55,13 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
 
   SharedPreferences prefs;
   Logger logger;
+  Api api;
 
   @override
   void initState() {
     super.initState();
 
-    _loadSettings();
+    _init();
 
     passawordNode = FocusNode();
     emailNode = FocusNode();
@@ -119,9 +120,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             parent: okButtonScalecontroller, curve: Curves.fastOutSlowIn));
   }
 
-  void _loadSettings() async {
+  void _init() async {
     prefs = await SharedPreferences.getInstance();
     logger = Logger();
+    api = Api.initialize();
   }
 
   @override
@@ -497,11 +499,11 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             Signup signupResquest = Signup(email: _email, password: _password);
 //            User user = await createUser('https://reqres.in/api/register',
 //                body: signupResquest.toJson());
-            User user = await singIn('https://reqres.in/api/login',
-                body: signupResquest.toJson());
+            User user =
+                await api.singIn('/api/login', body: signupResquest.toJson());
 
             SharedPreferencesHelper.setUser(jsonEncode(user), prefs);
-            print('save ${SharedPreferencesHelper.getUser(prefs)}');
+            logger.d('save ${SharedPreferencesHelper.getUser(prefs)}');
 
             setState(() {
               loading = true;
@@ -546,7 +548,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             Signup signupResquest = Signup(email: _email, password: _password);
 //            User user = await createUser('https://reqres.in/api/register',
 //                body: signupResquest.toJson());
-            User user = await createUserDio('https://reqres.in/api/register',
+            User user = await api.createUserDio('/api/register',
                 body: signupResquest.toJson());
 
             SharedPreferencesHelper.setUser(jsonEncode(user), prefs);
@@ -580,32 +582,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         throw new Exception("Error while fetching data");
       }
       return User.fromJson(jsonDecode(response.body));
-    });
-  }
-
-  Future<User> createUserDio(String url, {Map body}) async {
-    Dio dio = new Dio();
-
-    return dio.post(url, data: body).then((Response response) {
-      final int statusCode = response.statusCode;
-
-      if (statusCode < 200 || statusCode > 400) {
-        throw new Exception("Error while fetching data");
-      }
-      return User.fromJson(response.data);
-    });
-  }
-
-  Future<User> singIn(String url, {Map body}) async {
-    Dio dio = new Dio();
-
-    return dio.post(url, data: body).then((Response response) {
-      final int statusCode = response.statusCode;
-
-      if (statusCode < 200 || statusCode > 400) {
-        throw new Exception("Error while fetching data");
-      }
-      return User.fromJson(response.data);
     });
   }
 
