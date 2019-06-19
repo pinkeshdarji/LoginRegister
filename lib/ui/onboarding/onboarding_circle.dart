@@ -14,7 +14,6 @@ class OnBoardingCircle extends StatefulWidget {
 class _OnBoardingCircleState extends State<OnBoardingCircle> {
   double screenWidth = 0.0;
   double screenheight = 0.0;
-
   int currentPageValue = 0;
   int previousPageValue = 0;
   PageController controller;
@@ -25,34 +24,12 @@ class _OnBoardingCircleState extends State<OnBoardingCircle> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _loadSettings();
-
-    controller = PageController(initialPage: currentPageValue);
+    _init();
   }
 
-  void _loadSettings() async {
+  void _init() async {
     prefs = await SharedPreferences.getInstance();
-  }
-
-  void getChangedPageAndMoveBar(int page) {
-    print('page is $page');
-
-    currentPageValue = page;
-
-    if (previousPageValue == 0) {
-      previousPageValue = currentPageValue;
-      _moveBar = _moveBar + 0.14;
-    } else {
-      if (previousPageValue < currentPageValue) {
-        previousPageValue = currentPageValue;
-        _moveBar = _moveBar + 0.14;
-      } else {
-        previousPageValue = currentPageValue;
-        _moveBar = _moveBar - 0.14;
-      }
-    }
-
-    setState(() {});
+    controller = PageController(initialPage: currentPageValue);
   }
 
   @override
@@ -157,6 +134,9 @@ class _OnBoardingCircleState extends State<OnBoardingCircle> {
     );
   }
 
+  ///--------------------------------
+  /// HELPER METHODS
+  /// --------------------------------
   Widget circleBar(bool isActive) {
     return AnimatedContainer(
       duration: Duration(milliseconds: 150),
@@ -179,6 +159,27 @@ class _OnBoardingCircleState extends State<OnBoardingCircle> {
           color: isActive ? kOrange : kLightRed,
           borderRadius: BorderRadius.all(Radius.circular(12))),
     );
+  }
+
+  void getChangedPageAndMoveBar(int page) {
+    print('page is $page');
+
+    currentPageValue = page;
+
+    if (previousPageValue == 0) {
+      previousPageValue = currentPageValue;
+      _moveBar = _moveBar + 0.14;
+    } else {
+      if (previousPageValue < currentPageValue) {
+        previousPageValue = currentPageValue;
+        _moveBar = _moveBar + 0.14;
+      } else {
+        previousPageValue = currentPageValue;
+        _moveBar = _moveBar - 0.14;
+      }
+    }
+
+    setState(() {});
   }
 
   /// ----------------------------------------------------------

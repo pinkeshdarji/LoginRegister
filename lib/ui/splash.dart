@@ -20,7 +20,6 @@ class _SplashState extends State<Splash> {
   final _endBgColor = HexColor('29323c');
   double screenWidth = 0.0;
   double screenheight = 0.0;
-
   SharedPreferences prefs;
 
   @override

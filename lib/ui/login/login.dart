@@ -21,13 +21,14 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> with TickerProviderStateMixin {
-  double screenWidth = 0.0;
-  double screenheight = 0.0;
-  bool isSwitched = true;
-
   final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _registerFormKey = GlobalKey<FormState>();
   final scaffoldKey = new GlobalKey<ScaffoldState>();
+  final passwordController = TextEditingController();
+
+  double screenWidth = 0.0;
+  double screenheight = 0.0;
+  bool isSwitched = true;
   bool _autoValidate = false;
   FocusNode emailNode = FocusNode();
   FocusNode passawordNode = FocusNode();
@@ -42,7 +43,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   int requiredPasswordCharacter = 8;
   int isAllValidationPassedCounter = 0;
 
-  final passwordController = TextEditingController();
   AnimationController requiredcontroller;
   AnimationController spcialcontroller;
   AnimationController uppercontroller;
@@ -63,12 +63,24 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     super.initState();
 
     _init();
+    _initUI();
+    _initAnimation();
+  }
 
+  void _init() async {
+    prefs = await SharedPreferences.getInstance();
+    logger = Logger();
+    api = Api.initialize();
+  }
+
+  void _initUI() {
     passawordNode = FocusNode();
     emailNode = FocusNode();
     loading = false;
     passwordController.addListener(_onChangePassword);
+  }
 
+  void _initAnimation() {
     requiredcontroller = AnimationController(
         duration: const Duration(milliseconds: 300), vsync: this);
     spcialcontroller = AnimationController(
@@ -119,12 +131,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     okButtonScaleAnimation = Tween(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
             parent: okButtonScalecontroller, curve: Curves.fastOutSlowIn));
-  }
-
-  void _init() async {
-    prefs = await SharedPreferences.getInstance();
-    logger = Logger();
-    api = Api.initialize();
   }
 
   @override

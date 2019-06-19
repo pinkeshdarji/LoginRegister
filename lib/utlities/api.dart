@@ -41,6 +41,7 @@ class Api {
                   For request ${e.request}
                   And Response ${e.response != null ? 'request => ${e.response.request} and data => ${e.response.data} headers => ${e.response.headers}' : 'request is ${e.request}'}
                   Stacktrace is ${e.stackTrace}''');
+      //TODO you can create your own Error Object and pass to view
       return e.response != null
           ? e.response.data.toString()
           : Strings.something_went_wrong;
