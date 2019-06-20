@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 import 'package:login_register/ui/custom_paint/flower_paint.dart';
@@ -57,6 +59,9 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   SharedPreferences prefs;
   Logger logger;
   Api api;
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
@@ -391,7 +396,13 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             width: 20,
           ),
           FloatingActionButton(
-            onPressed: () {},
+            onPressed: () {
+              _signIn().then((FirebaseUser user) {
+                print(user);
+                openScreen(
+                    context: context, screen: Home(), isPushReplace: true);
+              }).catchError((e) => print(e));
+            },
             mini: true,
             heroTag: 'fab_google',
             backgroundColor: Colors.white,
@@ -1050,5 +1061,34 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   void _showSnackBar(String text) {
     scaffoldKey.currentState
         .showSnackBar(new SnackBar(content: new Text(text)));
+  }
+
+  Future<FirebaseUser> _signIn() async {
+    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    final FirebaseUser user = await _auth.signInWithCredential(credential);
+    print("signed in " + user.displayName);
+    return user;
+  }
+
+  void openScreen({BuildContext context, Widget screen, bool isPushReplace}) {
+    if (!isPushReplace) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => screen),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => screen),
+      );
+    }
   }
 }
