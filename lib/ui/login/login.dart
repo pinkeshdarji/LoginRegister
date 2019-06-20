@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
@@ -62,6 +63,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
 
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  //Facebook sign in
+  final FacebookLogin fbLogin = new FacebookLogin();
 
   @override
   void initState() {
@@ -382,7 +385,13 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           FloatingActionButton(
-            onPressed: () {},
+            onPressed: () {
+              _signInWithFacebook().then((FirebaseUser user) {
+                print(user);
+                openScreen(
+                    context: context, screen: Home(), isPushReplace: true);
+              }).catchError((e) => print(e));
+            },
             mini: true,
             heroTag: 'fab_facebook',
             backgroundColor: Colors.white,
@@ -1063,6 +1072,20 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         .showSnackBar(new SnackBar(content: new Text(text)));
   }
 
+  void openScreen({BuildContext context, Widget screen, bool isPushReplace}) {
+    if (!isPushReplace) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => screen),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => screen),
+      );
+    }
+  }
+
   Future<FirebaseUser> _signIn() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
@@ -1078,17 +1101,32 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     return user;
   }
 
-  void openScreen({BuildContext context, Widget screen, bool isPushReplace}) {
-    if (!isPushReplace) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => screen),
-      );
-    } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => screen),
-      );
-    }
+  Future<FirebaseUser> _signInWithFacebook() async {
+    fbLogin
+        .logInWithReadPermissions(['email', 'public_profile']).then((result) {
+      switch (result.status) {
+        case FacebookLoginStatus.loggedIn:
+          return firebaseFacebooksignin(result);
+          break;
+        case FacebookLoginStatus.cancelledByUser:
+          print('Cancelled by you');
+          break;
+        case FacebookLoginStatus.error:
+          print('Error');
+          break;
+      }
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  Future<FirebaseUser> firebaseFacebooksignin(
+      FacebookLoginResult result) async {
+    final AuthCredential credential = FacebookAuthProvider.getCredential(
+      accessToken: result.accessToken.token,
+    );
+    final FirebaseUser user = await _auth.signInWithCredential(credential);
+    print("signed in " + user.displayName);
+    return user;
   }
 }

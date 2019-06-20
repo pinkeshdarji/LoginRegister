@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:login_register/ui/login/login.dart';
 import 'package:login_register/utlities/shared_pref_helper.dart';
@@ -15,6 +16,7 @@ class _HomeState extends State<Home> {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final String kUser = 'user';
+  final FacebookLogin fbLogin = new FacebookLogin();
 
   @override
   void initState() {
@@ -51,6 +53,7 @@ class _HomeState extends State<Home> {
 
   void _logout() {
     _googleSignIn.signOut();
+    fbLogin.logOut();
     _auth.signOut();
     SharedPreferencesHelper.logout(prefs);
     Navigator.pushReplacement(
