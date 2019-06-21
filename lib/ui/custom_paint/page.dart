@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 
-class SlatePainter extends CustomPainter {
+class PagePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
+    //Step 1
     final paintgrey = Paint()..color = Colors.grey;
     var rrectRed =
         RRect.fromLTRBR(0, 0, size.width, size.height, Radius.circular(8.0));
     canvas.drawRRect(rrectRed, paintgrey);
 
+    //Step 2
     final paintWhite = Paint()..color = Colors.white;
     var rrectWhite =
         RRect.fromLTRBR(5, 0, size.width, size.height, Radius.circular(8.0));
     canvas.drawRRect(rrectWhite, paintWhite);
 
+    //Step 3
     final paintDarkgrey = Paint()
       ..color = Colors.blueGrey
       ..strokeWidth = 1.0;
@@ -25,6 +28,7 @@ class SlatePainter extends CustomPainter {
     canvas.drawLine(Offset(0, size.height * .8),
         Offset(size.width, size.height * .8), paintDarkgrey);
 
+    //Step 4
     final paintPink = Paint()
       ..color = Colors.pinkAccent
       ..strokeWidth = 2.5;
@@ -33,12 +37,12 @@ class SlatePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(SlatePainter oldDelegate) {
+  bool shouldRepaint(PagePainter oldDelegate) {
 //TODO Implement shouldRepaint
   }
 
   @override
-  bool shouldRebuildSemantics(SlatePainter oldDelegate) {
+  bool shouldRebuildSemantics(PagePainter oldDelegate) {
 //TODO Implement shouldRebuildSemantics
   }
 }

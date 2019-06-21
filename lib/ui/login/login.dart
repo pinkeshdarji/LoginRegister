@@ -7,7 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 import 'package:login_register/ui/custom_paint/flower_paint.dart';
-import 'package:login_register/ui/custom_paint/slate.dart';
+import 'package:login_register/ui/custom_paint/page.dart';
 import 'package:login_register/ui/home/home.dart';
 import 'package:login_register/ui/networking/requests/signup.dart';
 import 'package:login_register/ui/networking/response/user.dart';
@@ -653,7 +653,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         width: screenWidth * .7,
         height: 230,
       ),
-      foregroundPainter: SlatePainter(),
+      foregroundPainter: PagePainter(),
     );
   }
 
